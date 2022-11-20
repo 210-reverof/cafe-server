@@ -13,8 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 public class AuthUser implements UserDetails {
     private final Integer id;
-    private final String email;
-    private final String password;
+    private final String kakaoId;
     private List<String> roles = new ArrayList<>();
 
     @Override
@@ -26,12 +25,12 @@ public class AuthUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return kakaoId;
     }
 
     @Override
