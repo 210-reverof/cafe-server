@@ -24,6 +24,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginReqDto loginReqDto) {
         LoginResDto loginResDto = authService.login(loginReqDto.getKakaoAccessToken());
-        return new ResponseEntity(DefaultRes.res(StatusCode.OK, "로그인 성공", loginResDto), HttpStatus.OK);
+        return new ResponseEntity(DefaultRes.res(StatusCode.OK, "로그인 성공 및 토큰 발급 완료", loginResDto), HttpStatus.OK);
     }
 }
