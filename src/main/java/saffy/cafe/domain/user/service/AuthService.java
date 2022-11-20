@@ -18,7 +18,7 @@ public class AuthService {
         KakaoAccount kakaoAccount = getKaKaoAccount(kakaoAccessToken);
 
         int id = -1;
-        if (!userRepository.existByKaKaoId(kakaoAccount.getKakaoId())) {
+        if (!userRepository.existsByKakaoId(kakaoAccount.getKakaoId())) {
             id = save(kakaoAccount);
         }
 
