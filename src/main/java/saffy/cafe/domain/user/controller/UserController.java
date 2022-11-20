@@ -25,4 +25,11 @@ public class UserController {
         return new ResponseEntity(DefaultRes.res(StatusCode.OK, "회원 가입 완료", ""), HttpStatus.OK);
     }
 
+    @PostMapping("/update-user")
+    public ResponseEntity updateUserData() {
+
+        String token = jwtTokenProvider.createToken("wonyoung", "USER");
+        return new ResponseEntity(DefaultRes.res(StatusCode.OK, "회원 정보 수정", ""), HttpStatus.OK);
+    }
+
 }
