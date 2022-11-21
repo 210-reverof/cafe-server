@@ -15,14 +15,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
+    public UserDetails loadUserByUsername(String kakaoId) throws UsernameNotFoundException {
+        User user = userRepository.findByKakaoId(kakaoId)
                 .orElseThrow(() -> new UsernameNotFoundException("회원이 존재하지 않습니다."));
 
         return new AuthUser(
                 user.getId(),
-                user.getEmail(),
-                user.getPassword(),
+                user.getKakaoId(),
                 user.getRoles()
         );
     }
