@@ -3,6 +3,7 @@ package saffy.cafe.domain.user.filter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,7 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final String token = resolveToken(request.getHeader("Authorization"));
-        String accountId = jwtTokenProvider.getUserEmail(token);
+        Authentication auth = jwtTokenProvider.validateToken(request, token);
+        String accountId = jwtTokenProvider.getKaKaoId(token);
         if(SecurityContextHolder.getContext().getAuthentication() == null) {
             final UserDetails userDetails = userDetailsService.loadUserByUsername(accountId);
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

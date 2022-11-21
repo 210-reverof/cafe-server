@@ -19,7 +19,8 @@ import java.util.Date;
 public class JwtTokenProvider {
     @Value("${spring.jwt.secret-key}")
     private String SECRET_KEY;
-    private static final Long TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 7 * 2; // 1m = 1000L, * 60, 총 2주
+    private static final Long TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 7 * 2; // 1s = 1000L, * 60, 총 2주
+    // private static final Long TOKEN_VALID_TIME = 1000L;
     private final CustomUserDetailsService customUserDetailsService;
 
     // 의존성 주입 후, 초기화를 수행
@@ -29,8 +30,8 @@ public class JwtTokenProvider {
         SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
     }
 
-    public String createToken(String userEmail, String roles){
-        Claims claims = Jwts.claims().setSubject(userEmail); // claims 생성 및 payload 설정
+    public String createToken(String kakaoId, String roles){
+        Claims claims = Jwts.claims().setSubject(kakaoId); // claims 생성 및 payload 설정
         claims.put("roles", roles); // 권한 설정, key/ value 쌍으로 저장
         Date date = new Date();
         return Jwts.builder()
@@ -44,7 +45,7 @@ public class JwtTokenProvider {
     public Authentication validateToken(HttpServletRequest request, String token) {
         String exception = "exception";
         try {
-            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
             return getAuthentication(token);
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
             request.setAttribute(exception, "토큰의 형식을 확인하세요");
@@ -57,11 +58,11 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserEmail(token));
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(getKaKaoId(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getUserEmail(String token) {
+    public String getKaKaoId(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
     }
 }

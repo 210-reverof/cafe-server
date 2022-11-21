@@ -1,12 +1,22 @@
 package saffy.cafe.domain.user.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import saffy.cafe.domain.user.data.dto.KakaoAccount;
 import saffy.cafe.domain.user.data.dto.res.LoginResDto;
 import saffy.cafe.domain.user.data.entity.User;
 import saffy.cafe.domain.user.filter.JwtTokenProvider;
 import saffy.cafe.domain.user.repository.UserRepository;
+
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -15,11 +25,13 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public LoginResDto login(String kakaoAccessToken) {
-        KakaoAccount kakaoAccount = getKaKaoAccount(kakaoAccessToken);
+        KakaoAccount kakaoAccount = getKakaoAccount(kakaoAccessToken);
 
         int id = -1;
         if (!userRepository.existsByKakaoId(kakaoAccount.getKakaoId())) {
             id = save(kakaoAccount);
+        } else {
+            id = userRepository.findByKakaoId(kakaoAccount.getKakaoId()).get().getId();
         }
 
         if (id == -1) return null;
@@ -35,12 +47,28 @@ public class AuthService {
                 .build()).getId();
     }
 
-    private KakaoAccount getKaKaoAccount(String kakaoAccessToken) {
-        // TODO :: 카카오 요청
+    private KakaoAccount getKakaoAccount(String kakaoAccessToken) {
+        try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet("https://kapi.kakao.com/v2/user/me");
+            httpGet.addHeader("Authorization", "Bearer " + kakaoAccessToken);
+            CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+            String json = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
 
-        String kakaoId = "111244334";
-        String nickname = "홍길동";
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> map = mapper.readValue(json, Map.class);
+            String properties = String.valueOf(map.get("properties"));
+            String[] pros = properties.split(", ");
 
-        return new KakaoAccount(kakaoId, nickname);
+            String kakaoId = String.valueOf(map.get("id"));
+            String nickname = pros[0].substring(10);
+
+            return new KakaoAccount(kakaoId, nickname);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }
