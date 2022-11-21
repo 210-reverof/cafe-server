@@ -15,11 +15,6 @@ import javax.persistence.PersistenceContext;
 @EnableAutoConfiguration
 @ComponentScan
 public class AppConfig {
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Configuration
     public class QueryDslConfig {
 

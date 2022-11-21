@@ -3,6 +3,7 @@ package saffy.cafe.domain.user.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -36,14 +37,17 @@ public class User {
     @Column
     private Integer id;
 
-    @Column(nullable = false, length = 100, unique = true)
-    private String email;
+    @Column(nullable = false, length = 100)
+    private String kakaoId;
 
-    @Column(nullable = false, length = 200, unique = true)
-    private String password;
+    @Column(nullable = false, length = 100)
+    private String nickname;
+
+    @Column(nullable = false, length = 100)
+    private String address = "";
 
     @Column(nullable = false)
-    private Integer tier;
+    private int stamps = 1;
 
     @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
@@ -52,4 +56,10 @@ public class User {
     @CreatedDate
     @Column
     private LocalDateTime createdAt;
+
+    @Builder
+    public User(String kakaoId, String nickname) {
+        this.kakaoId = kakaoId;
+        this.nickname = nickname;
+    }
 }

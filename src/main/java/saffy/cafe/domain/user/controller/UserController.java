@@ -1,35 +1,31 @@
 package saffy.cafe.domain.user.controller;
 
 import io.swagger.annotations.Api;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import saffy.cafe.domain.user.data.dto.res.OnboardingResDto;
 import saffy.cafe.domain.user.filter.JwtTokenProvider;
+import saffy.cafe.domain.user.service.UserService;
 import saffy.cafe.response.DefaultRes;
 import saffy.cafe.response.StatusCode;
 
 @Api(tags="user", value = "사용자 관련")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/user")
+@RequestMapping("/api/user")
 public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
-    @PostMapping("/sign-up")
-    public ResponseEntity register() {
-
-        String token = jwtTokenProvider.createToken("wonyoung", "USER");
-        return new ResponseEntity(DefaultRes.res(StatusCode.OK, "회원 가입 완료", ""), HttpStatus.OK);
+    @GetMapping("/onboarding")
+    public ResponseEntity register(@RequestHeader("Authorization") String token) {
+        OnboardingResDto onboardingResDto = userService.getOnboarding(jwtTokenProvider.getKaKaoId(token.substring(7)));
+        return new ResponseEntity(DefaultRes.res(StatusCode.OK, "사용자 정보 반환 완료", onboardingResDto), HttpStatus.OK);
     }
 
-    @PostMapping("/update-user")
-    public ResponseEntity updateUserData() {
-
-        String token = jwtTokenProvider.createToken("wonyoung", "USER");
-        return new ResponseEntity(DefaultRes.res(StatusCode.OK, "회원 정보 수정", ""), HttpStatus.OK);
-    }
 
 }
