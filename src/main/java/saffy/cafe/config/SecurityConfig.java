@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import saffy.cafe.domain.user.filter.CustomAuthenticationEntryPoint;
 import saffy.cafe.domain.user.filter.JwtAuthenticationFilter;
 
 @Configuration
@@ -25,11 +26,13 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("**").permitAll()
-//                .antMatchers("/v1/user/sign-up", "/v1/user/sign-in", "/v1/user/check/**").permitAll()
-//                .antMatchers("/swagger-ui/**", "/v3/**", "/swagger-ui/", "/swagger-ui.html", "/v3/api-docs/", "/webjars/", "/swagger-resources/**").permitAll()
+//                .antMatchers("**").permitAll()
+                .antMatchers("/api/auth/login").permitAll()
+                .antMatchers("/swagger-ui/**", "/v3/**", "/swagger-ui/", "/swagger-ui.html", "/v3/api-docs/", "/webjars/", "/swagger-resources/**").permitAll()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll() // 추가
                 .anyRequest().authenticated()
+                .and()
+                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .addFilterBefore(jwtAuthenticateFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
