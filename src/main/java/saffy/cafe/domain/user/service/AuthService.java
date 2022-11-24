@@ -61,7 +61,7 @@ public class AuthService {
             String[] pros = properties.split(", ");
 
             String kakaoId = String.valueOf(map.get("id"));
-            String nickname = pros[0].substring(10);
+            String nickname = "";
 
             return new KakaoAccount(kakaoId, nickname);
 

@@ -16,5 +16,5 @@ public class UpdatePostReqDto {
     private String location;
     private String product;
     private int price;
-    private boolean isEnd;
+    private Boolean isEnd;
 }

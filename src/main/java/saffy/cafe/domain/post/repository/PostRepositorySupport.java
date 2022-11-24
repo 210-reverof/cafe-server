@@ -78,7 +78,7 @@ public class PostRepositorySupport {
                 .set(p.location, updatePostReqDto.getLocation())
                 .set(p.product, updatePostReqDto.getProduct())
                 .set(p.price, updatePostReqDto.getPrice())
-                .set(p.isEnd, updatePostReqDto.isEnd())
+                .set(p.isEnd, updatePostReqDto.getIsEnd())
                 .where(p.id.eq(postId))
                 .execute();
     }
